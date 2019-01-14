@@ -19,7 +19,7 @@ _________________________________________________________________________
 return true if file exist
 
 	func StrContainBackSlash(s string) bool
-return true if last char in string s == '\'
+return true if last char in string s == '\\'
 
 	func StrIsPrintRune(s string) bool  
 return true if input string consists only of printable rune
