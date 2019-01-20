@@ -1,19 +1,13 @@
-package xLib
+package xlib
 
 import (
 	"bufio"
 	"errors"
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
-)
-
-const (
-	//Windows1251 is the Windows 1251 code page
-	Windows1251 = 1
-	//CodePage866 is the IBM Code Page 866
-	CodePage866 = 2
 )
 
 const (
@@ -29,8 +23,8 @@ const (
 
 //CodePageDetect - detect code page of file
 //return 0 if code page can not be detected
-//return const Windows1251 for cp_1251
-//return const CodePage866 for cp_866
+//return const CpWindows1251 for Windows code page 1251
+//return const Cp866 for IBM 866 code page
 func CodePageDetect(fn string) (int, error) {
 	var (
 		r      rune
@@ -41,7 +35,7 @@ func CodePageDetect(fn string) (int, error) {
 	iFile, err := os.Open(fn)
 	defer iFile.Close()
 	if err != nil {
-		return 0, err
+		return CpEmpty, err
 	}
 
 	iScanner := bufio.NewScanner(iFile)
@@ -67,11 +61,11 @@ func CodePageDetect(fn string) (int, error) {
 	}
 	switch {
 	case cp1251 > cp866:
-		return Windows1251, nil
+		return CpWindows1251, nil
 	case cp1251 < cp866:
-		return CodePage866, nil
+		return Cp866, nil
 	}
-	return 0, nil
+	return CpEmpty, nil
 }
 
 //SeekFileToString - search string in text file and return *bufio.Scanner at founded line
@@ -107,14 +101,19 @@ func FindFilesExt(fileList *[]string, path, fileNameExt string) (int, error) {
 	if fileList == nil {
 		return 0, errors.New("first parameter 'fileList' is nil")
 	}
+	extFile := strings.ToUpper(fileNameExt)
 	i := 0 //index founded files
 	err := filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			log.Printf("prevent panic by handling failure accessing a path %q: %v\n", path, err)
 			return err
 		}
-		if (info.IsDir()) && (filepath.Ext(path) != fileNameExt) {
-			//skip folders and files with extention not fileNameExt
+		if info.IsDir() {
+			//skip folders
+			return nil
+		}
+		if strings.ToUpper(filepath.Ext(path)) != extFile {
+			//skip folders and files with extention not extFile
 			return nil
 		}
 		//file found
@@ -123,4 +122,37 @@ func FindFilesExt(fileList *[]string, path, fileNameExt string) (int, error) {
 		return nil
 	})
 	return i, err
+}
+
+//ReplaceCpFile - replace code page text file from one to another
+func ReplaceCpFile(fileName string, fromCP, toCP int64) error {
+	if fromCP == toCP {
+		return nil
+	}
+
+	iFile, err := os.Open(fileName)
+	if err != nil {
+		return err
+	}
+
+	tmpFileName := fileName + "~"
+	oFile, err := os.Create(tmpFileName)
+	if err != nil {
+		return err
+	}
+
+	s := ""
+	iScanner := bufio.NewScanner(iFile)
+	for i := 0; iScanner.Scan(); i++ {
+		s = iScanner.Text()
+		s, err = ConvertStrCodePage(s, fromCP, toCP)
+		if err != nil {
+			fmt.Printf("error on file '%s' convert\n", fileName)
+			return err
+		}
+		fmt.Fprintf(oFile, "%s\n", s)
+	}
+	iFile.Close()
+	oFile.Close()
+	return os.Rename(tmpFileName, fileName)
 }
