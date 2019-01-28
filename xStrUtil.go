@@ -34,6 +34,9 @@ func ConvertStrCodePage(s string, fromCP, toCP int64) (string, error) {
 	if len(s) == 0 {
 		return "", nil
 	}
+	if fromCP == toCP {
+		return s, nil
+	}
 
 	var err error
 

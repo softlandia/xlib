@@ -11,21 +11,21 @@ import (
 )
 
 const (
-	cp866r1Min  = 0x80
-	cp866r1Max  = 0xAF
-	cp866r2Min  = 0xE0
-	cp866r2Max  = 0xF1
-	cp1251s1    = 0xA8
-	cp1251s2    = 0xB8
-	cp1251r1Min = 0xC0
-	cp1251r1Max = 0xFF
+	cp866r1Min  = 0x80 //заглавная буква А
+	cp866r1Max  = 0xAF //строчная буква п - в этом интервале в 866 раскладке лежит большинство русских букв
+	cp866r2Min  = 0xE0 //строчная р
+	cp866r2Max  = 0xF1 //строчна ё - в этом интервале лежат остальные русские буквы
+	cp1251s1    = 0xA8 //Ё
+	cp1251s2    = 0xB8 //ё в этой позиции в 866 лежит псевдографика
+	cp1251r1Min = 0xC0 //с этой позиции начинается весь алфавит
+	cp1251r1Max = 0xFF //заканчивается
 )
 
 //CodePageDetect - detect code page of file
 //return 0 if code page can not be detected
-//return const CpWindows1251 for Windows code page 1251
-//return const Cp866 for IBM 866 code page
-func CodePageDetect(fn string) (int, error) {
+//return const xlib.CpWindows1251 for Windows code page 1251
+//return const clib.Cp866 for IBM 866 code page
+func CodePageDetect(fn string, stopStr ...string) (int, error) {
 	var (
 		r      rune
 		cp1251 int
@@ -33,16 +33,24 @@ func CodePageDetect(fn string) (int, error) {
 	)
 
 	iFile, err := os.Open(fn)
-	defer iFile.Close()
 	if err != nil {
 		return CpEmpty, err
 	}
+	defer iFile.Close()
+
+	fullScan := (len(stopStr) > 0)
 
 	iScanner := bufio.NewScanner(iFile)
 	for i := 0; iScanner.Scan(); i++ {
 		s := iScanner.Text()
+		if fullScan {
+			if strings.Contains(s, stopStr[0]) {
+				break
+			}
+		}
 		for j := range s {
 			r = rune(s[j])
+			//проверка принадлежности символа позициям алфавитных символов в кодовой таблице 1251
 			switch {
 			case r == cp1251s1:
 				cp1251++
@@ -51,6 +59,7 @@ func CodePageDetect(fn string) (int, error) {
 			case (r >= cp1251r1Min) && (r <= cp1251r1Max):
 				cp1251++
 			}
+			//проверка принадлежности символа позициям алфавитных символов в кодовой таблице 866
 			switch {
 			case (r >= cp866r1Min) && (r <= cp866r1Max):
 				cp866++
@@ -78,12 +87,10 @@ func SeekFileToString(fileName, strToSearch string) (*bufio.Scanner, error) {
 	if err != nil {
 		return nil, err
 	}
-	p := -1
 	iScanner := bufio.NewScanner(iFile)
 	for i := 0; iScanner.Scan(); i++ {
 		s := iScanner.Text()
-		p = strings.Index(s, strToSearch)
-		if p >= 0 {
+		if strings.Contains(s, strToSearch) {
 			return iScanner, nil
 		}
 	}
@@ -134,7 +141,7 @@ func ReplaceCpFile(fileName string, fromCP, toCP int64) error {
 	if err != nil {
 		return err
 	}
-
+	//TODO need using sytem tmp folder
 	tmpFileName := fileName + "~"
 	oFile, err := os.Create(tmpFileName)
 	if err != nil {
