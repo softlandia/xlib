@@ -22,7 +22,7 @@ functions
 6. CodePageDetect(fn string) (int, error)
 7. ConvertStrCodePage(s string, fromCP, toCP int64) (string, error)
 
-wfcp - sample of using function CodePageDetect()
+wfcp - sample of using function CodePageDetect()  
 test - sample of using SeekFileToString()
 
 description
