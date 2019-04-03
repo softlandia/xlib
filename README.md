@@ -20,16 +20,13 @@ install: go install
 6. CodePageDetect(fn string) (int, error)
 7. ConvertStrCodePage(s string, fromCP, toCP int64) (string, error)
 
-wfcp - sample of using function CodePageDetect()  
-test - sample of using SeekFileToString()
-
 ## description ##
 
     func FileExists(name string) bool  
-return true if file exist
+    return true if file exist
 
     func StrContainBackSlash(s string) bool
-return true if last char in string s == '\'
+    return true if string s consist rune back slash '\'
 
     func StrIsPrintRune(s string) bool  
 return true if input string consists only of printable rune
@@ -47,3 +44,7 @@ if string stopStr is present then input file scanned befor appearance stopStr
 
     func ConvertStrCodePage(s string, fromCP, toCP int64) (string, error)
 convert string from one code page to another
+
+
+    func FindFilesExt(fileList *[]string, path, fileNameExt string) (int, error) 
+search in path files with extention == fielNameExt and put file name to slice fileList
