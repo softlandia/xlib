@@ -1,18 +1,16 @@
-### golang util library  ###
+# golang util library #
 
 (c) softlandia@gmail.com
 
 download: go get -u github.com/softlandia/xLib
 install: go install
 
-dependences
-------------
+## dependences ##
 
 >"golang.org/x/text/encoding/charmap"  
 >"golang.org/x/text/transform"
 
-functions
-----------
+## functions ##
 
 1. FileExists(name string) bool
 2. StrContainBackSlash(s string) bool
@@ -25,8 +23,7 @@ functions
 wfcp - sample of using function CodePageDetect()  
 test - sample of using SeekFileToString()
 
-description
------------
+## description ##
 
     func FileExists(name string) bool  
 return true if file exist
