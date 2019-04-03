@@ -25,6 +25,7 @@ func StrIsPrintRune(s string) bool {
 }
 
 //ChangeFileExt - change in path string file name extention
+//newExt must start from '.' sample '.xyz'
 func ChangeFileExt(iFileName, newExt string) string {
 	return strings.TrimSuffix(iFileName, filepath.Ext(iFileName)) + newExt
 }
@@ -53,4 +54,18 @@ func ConvertStrCodePage(s string, fromCP, toCP int64) (string, error) {
 		s, _, err = transform.String(charmap.Windows1251.NewEncoder(), s)
 	}
 	return s, err
+}
+
+//CodePageAsString - return string is name of char set with id cp
+func CodePageAsString(cp int) string {
+	switch cp {
+	case Cp866:
+		return Cp866AsStr
+	case CpWindows1251:
+		return CpWindows1251AsStr
+	case CpUtf8:
+		return CpUtf8AsStr
+	default:
+		return CpEmptyAsStr
+	}
 }

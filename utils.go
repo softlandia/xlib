@@ -19,4 +19,3 @@ const (
 	CpUtf8AsStr = "UTF8"
 )
 
-//const CpNames [3]string = {CpEmptyAsStr, CpWindows1251AsStr, Cp866AsStr}

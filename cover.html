@@ -1,0 +1,349 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">github.com/softlandia/xlib/xFileUtil.go (76.0%)</option>
+				
+				<option value="file1">github.com/softlandia/xlib/xStrUtil.go (26.1%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package xlib
+
+import (
+        "bufio"
+        "errors"
+        "fmt"
+        "log"
+        "os"
+        "path/filepath"
+        "strings"
+)
+
+const (
+        cp866r1Min  = 0x80 //заглавная буква А
+        cp866r1Max  = 0xAF //строчная буква п - в этом интервале в 866 раскладке лежит большинство русских букв
+        cp866r2Min  = 0xE0 //строчная р
+        cp866r2Max  = 0xF1 //строчна ё - в этом интервале лежат остальные русские буквы
+        cp1251s1    = 0xA8 //Ё
+        cp1251s2    = 0xB8 //ё в этой позиции в 866 лежит псевдографика
+        cp1251r1Min = 0xC0 //с этой позиции начинается весь алфавит
+        cp1251r1Max = 0xFF //заканчивается
+)
+
+//CodePageDetect - detect code page of file
+//return 0 if code page can not be detected
+//return const xlib.CpWindows1251 for Windows code page 1251
+//return const clib.Cp866 for IBM 866 code page
+func CodePageDetect(fn string, stopStr ...string) (int, error) <span class="cov8" title="1">{
+        var (
+                r      rune
+                cp1251 int
+                cp866  int
+        )
+
+        iFile, err := os.Open(fn)
+        if err != nil </span><span class="cov8" title="1">{
+                return CpEmpty, err
+        }</span>
+        <span class="cov8" title="1">defer iFile.Close()
+
+        //определять страницу считывая файл только до строки stopStr
+        scanToStr := (len(stopStr) &gt; 0)
+
+        iScanner := bufio.NewScanner(iFile)
+        for i := 0; iScanner.Scan(); i++ </span><span class="cov8" title="1">{
+                s := iScanner.Text()
+                if scanToStr </span><span class="cov8" title="1">{
+                        if strings.Contains(s, stopStr[0]) </span><span class="cov8" title="1">{ //stopStr[0] - строка, stopStr - слайс строк
+                                break</span>
+                        }
+                }
+                <span class="cov8" title="1">for j := range s </span><span class="cov8" title="1">{
+                        r = rune(s[j])
+                        //проверка принадлежности символа позициям алфавитных символов в кодовой таблице 1251
+                        switch </span>{
+                        case r == cp1251s1:<span class="cov8" title="1">
+                                cp1251++</span>
+                        case r == cp1251s2:<span class="cov8" title="1">
+                                cp1251++</span>
+                        case (r &gt;= cp1251r1Min) &amp;&amp; (r &lt;= cp1251r1Max):<span class="cov8" title="1">
+                                cp1251++</span>
+                        }
+                        //проверка принадлежности символа позициям алфавитных символов в кодовой таблице 866
+                        <span class="cov8" title="1">switch </span>{
+                        case (r &gt;= cp866r1Min) &amp;&amp; (r &lt;= cp866r1Max):<span class="cov8" title="1">
+                                cp866++</span>
+                        case (r &gt;= cp866r2Min) &amp;&amp; (r &lt;= cp866r2Max):<span class="cov8" title="1">
+                                cp866++</span>
+                        }
+                }
+        }
+        <span class="cov8" title="1">switch </span>{
+        case cp1251 &gt; cp866:<span class="cov8" title="1">
+                return CpWindows1251, nil</span>
+        case cp1251 &lt; cp866:<span class="cov8" title="1">
+                return Cp866, nil</span>
+        }
+        <span class="cov8" title="1">return CpEmpty, nil</span>
+}
+
+//SeekFileToString - search string in text file and return *bufio.Scanner at founded line
+//return number of line if string 'strToSearch' founded
+//return scanner on line with string 'strToSearch'. first call scanner.Text() - return this line
+//return (-1, nil, nil) if string 'strToSearch' not founded
+//return (-1, nil, nil) if string 'strToSearch' is empty
+//return (0, nil, err) if file not open or error occure when file reading
+//opened file NOT CLOSED in any case!
+func SeekFileToString(fileName, strToSearch string) (int, *bufio.Scanner, error) <span class="cov8" title="1">{
+        if len(strToSearch) == 0 </span><span class="cov8" title="1">{
+                return -1, nil, nil
+        }</span>
+
+        <span class="cov8" title="1">iFile, err := os.Open(fileName)
+        if err != nil </span><span class="cov8" title="1">{
+                return 0, nil, err
+        }</span>
+        <span class="cov8" title="1">iScanner := bufio.NewScanner(iFile)
+        for i := 0; iScanner.Scan(); i++ </span><span class="cov8" title="1">{
+                s := iScanner.Text()
+                if strings.Contains(s, strToSearch) </span><span class="cov8" title="1">{
+                        return i, iScanner, nil
+                }</span>
+        }
+        <span class="cov8" title="1">return -1, nil, iScanner.Err()</span>
+}
+
+//FileExists - return true if file exist
+func FileExists(name string) bool <span class="cov8" title="1">{
+        _, err := os.Stat(name)
+        return !os.IsNotExist(err)
+}</span>
+
+//FindFilesExt - search all files in path with 'ext' &amp; put to list
+func FindFilesExt(fileList *[]string, path, fileNameExt string) (int, error) <span class="cov8" title="1">{
+        if fileList == nil </span><span class="cov8" title="1">{
+                return 0, errors.New("first parameter 'fileList' is nil")
+        }</span>
+        <span class="cov8" title="1">extFile := strings.ToUpper(fileNameExt)
+        i := 0 //index founded files
+        err := filepath.Walk(path, func(path string, info os.FileInfo, err error) error </span><span class="cov8" title="1">{
+                if err != nil </span><span class="cov0" title="0">{
+                        log.Printf("prevent panic by handling failure accessing a path %q: %v\n", path, err)
+                        return err
+                }</span>
+                <span class="cov8" title="1">if info.IsDir() </span><span class="cov8" title="1">{
+                        //skip folders
+                        return nil
+                }</span>
+                <span class="cov8" title="1">if strings.ToUpper(filepath.Ext(path)) != extFile </span><span class="cov8" title="1">{
+                        //skip folders and files with extention not extFile
+                        return nil
+                }</span>
+                //file found
+                <span class="cov8" title="1">i++
+                *fileList = append(*fileList, path)
+                return nil</span>
+        })
+        <span class="cov8" title="1">return i, err</span>
+}
+
+//ReplaceCpFile - replace code page text file from one to another
+func ReplaceCpFile(fileName string, fromCP, toCP int64) error <span class="cov8" title="1">{
+        if fromCP == toCP </span><span class="cov8" title="1">{
+                return nil
+        }</span>
+
+        <span class="cov8" title="1">iFile, err := os.Open(fileName)
+        if err != nil </span><span class="cov8" title="1">{
+                return err
+        }</span>
+        //TODO need using sytem tmp folder
+        <span class="cov0" title="0">tmpFileName := fileName + "~"
+        oFile, err := os.Create(tmpFileName)
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+
+        <span class="cov0" title="0">s := ""
+        iScanner := bufio.NewScanner(iFile)
+        for i := 0; iScanner.Scan(); i++ </span><span class="cov0" title="0">{
+                s = iScanner.Text()
+                s, err = ConvertStrCodePage(s, fromCP, toCP)
+                if err != nil </span><span class="cov0" title="0">{
+                        fmt.Printf("error on file '%s' convert\n", fileName)
+                        return err
+                }</span>
+                <span class="cov0" title="0">fmt.Fprintf(oFile, "%s\n", s)</span>
+        }
+        <span class="cov0" title="0">iFile.Close()
+        oFile.Close()
+        return os.Rename(tmpFileName, fileName)</span>
+}
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package xlib
+
+import (
+        "path/filepath"
+        "strings"
+        "unicode"
+
+        "golang.org/x/text/encoding/charmap"
+        "golang.org/x/text/transform"
+)
+
+//StrContainBackSlash - return true if input string contain '\'
+func StrContainBackSlash(s string) bool <span class="cov8" title="1">{
+        return strings.ContainsRune(s, 0x005C)
+}</span>
+
+//StrIsPrintRune - return true if input string consists of printable rune
+func StrIsPrintRune(s string) bool <span class="cov8" title="1">{
+        for _, r := range s </span><span class="cov8" title="1">{
+                if !unicode.IsPrint(r) </span><span class="cov8" title="1">{
+                        return false
+                }</span>
+        }
+        <span class="cov8" title="1">return true</span>
+}
+
+//ChangeFileExt - change in path string file name extention
+//newExt must start from '.' sample '.xyz'
+func ChangeFileExt(iFileName, newExt string) string <span class="cov8" title="1">{
+        return strings.TrimSuffix(iFileName, filepath.Ext(iFileName)) + newExt
+}</span>
+
+//ConvertStrCodePage - convert string from one code page to another
+func ConvertStrCodePage(s string, fromCP, toCP int64) (string, error) <span class="cov0" title="0">{
+        if len(s) == 0 </span><span class="cov0" title="0">{
+                return "", nil
+        }</span>
+        <span class="cov0" title="0">if fromCP == toCP </span><span class="cov0" title="0">{
+                return s, nil
+        }</span>
+
+        <span class="cov0" title="0">var err error
+
+        switch fromCP </span>{
+        case Cp866:<span class="cov0" title="0">
+                s, _, err = transform.String(charmap.CodePage866.NewDecoder(), s)</span>
+        case CpWindows1251:<span class="cov0" title="0">
+                s, _, err = transform.String(charmap.Windows1251.NewDecoder(), s)</span>
+        }
+        <span class="cov0" title="0">switch toCP </span>{
+        case Cp866:<span class="cov0" title="0">
+                s, _, err = transform.String(charmap.CodePage866.NewEncoder(), s)</span>
+        case CpWindows1251:<span class="cov0" title="0">
+                s, _, err = transform.String(charmap.Windows1251.NewEncoder(), s)</span>
+        }
+        <span class="cov0" title="0">return s, err</span>
+}
+
+//CodePageAsString - return string is name of char set with id cp
+func CodePageAsString(cp int) string <span class="cov0" title="0">{
+        switch cp </span>{
+        case Cp866:<span class="cov0" title="0">
+                return Cp866AsStr</span>
+        case CpWindows1251:<span class="cov0" title="0">
+                return CpWindows1251AsStr</span>
+        case CpUtf8:<span class="cov0" title="0">
+                return CpUtf8AsStr</span>
+        default:<span class="cov0" title="0">
+                return CpEmptyAsStr</span>
+        }
+}
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>

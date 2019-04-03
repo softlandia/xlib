@@ -38,13 +38,14 @@ func CodePageDetect(fn string, stopStr ...string) (int, error) {
 	}
 	defer iFile.Close()
 
-	fullScan := (len(stopStr) > 0)
+	//определять страницу считывая файл только до строки stopStr
+	scanToStr := (len(stopStr) > 0)
 
 	iScanner := bufio.NewScanner(iFile)
 	for i := 0; iScanner.Scan(); i++ {
 		s := iScanner.Text()
-		if fullScan {
-			if strings.Contains(s, stopStr[0]) {
+		if scanToStr {
+			if strings.Contains(s, stopStr[0]) { //stopStr[0] - строка, stopStr - слайс строк
 				break
 			}
 		}
@@ -78,23 +79,29 @@ func CodePageDetect(fn string, stopStr ...string) (int, error) {
 }
 
 //SeekFileToString - search string in text file and return *bufio.Scanner at founded line
+//return number of line if string 'strToSearch' founded
 //return scanner on line with string 'strToSearch'. first call scanner.Text() - return this line
-//return (nil, nil) if string 'strToSearch' not found
-//return (nil, err) if file not open or error occure when file reading
-//opened file not close in any case!!!
-func SeekFileToString(fileName, strToSearch string) (*bufio.Scanner, error) {
+//return (-1, nil, nil) if string 'strToSearch' not founded
+//return (-1, nil, nil) if string 'strToSearch' is empty
+//return (0, nil, err) if file not open or error occure when file reading
+//opened file NOT CLOSED in any case!
+func SeekFileToString(fileName, strToSearch string) (int, *bufio.Scanner, error) {
+	if len(strToSearch) == 0 {
+		return -1, nil, nil
+	}
+
 	iFile, err := os.Open(fileName)
 	if err != nil {
-		return nil, err
+		return 0, nil, err
 	}
 	iScanner := bufio.NewScanner(iFile)
 	for i := 0; iScanner.Scan(); i++ {
 		s := iScanner.Text()
 		if strings.Contains(s, strToSearch) {
-			return iScanner, nil
+			return i, iScanner, nil
 		}
 	}
-	return nil, iScanner.Err()
+	return -1, nil, iScanner.Err()
 }
 
 //FileExists - return true if file exist
