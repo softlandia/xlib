@@ -2,8 +2,8 @@
 
 (c) softlandia@gmail.com
 
-download: go get -u github.com/softlandia/xLib
-install: go install
+>download: go get -u github.com/softlandia/xLib
+>install: go install
 
 ## dependences ##
 
