@@ -63,3 +63,22 @@ func TestChangeFileExt(t *testing.T) {
 		}
 	}
 }
+
+func TestConvertStrCodePage(t *testing.T) {
+	_, err := ConvertStrCodePage("1234", Cp866, CpWindows1251)
+	if err != nil {
+		t.Errorf("<ConvertStrCodePage> on test 1 return unexpected err: %v", err)
+	}
+	_, err = ConvertStrCodePage("1234", CpWindows1251, Cp866)
+	if err != nil {
+		t.Errorf("<ConvertStrCodePage> on test 2 return unexpected err: %v", err)
+	}
+	_, err = ConvertStrCodePage("", Cp866, CpWindows1251)
+	if err != nil {
+		t.Errorf("<ConvertStrCodePage> with empty string must return ERROR, but retrurn: %v", err)
+	}
+	_, err = ConvertStrCodePage("1234", Cp866, Cp866)
+	if err != nil {
+		t.Errorf("<ConvertStrCodePage> with equal fromCP and toCp must return nil, but retrurn: %v", err)
+	}
+}

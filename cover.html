@@ -54,9 +54,9 @@
 			<div id="nav">
 				<select id="files">
 				
-				<option value="file0">github.com/softlandia/xlib/xFileUtil.go (76.0%)</option>
+				<option value="file0">github.com/softlandia/xlib/xFileUtil.go (92.0%)</option>
 				
-				<option value="file1">github.com/softlandia/xlib/xStrUtil.go (26.1%)</option>
+				<option value="file1">github.com/softlandia/xlib/xStrUtil.go (78.3%)</option>
 				
 				</select>
 			</div>
@@ -221,22 +221,22 @@ func ReplaceCpFile(fileName string, fromCP, toCP int64) error <span class="cov8"
                 return err
         }</span>
         //TODO need using sytem tmp folder
-        <span class="cov0" title="0">tmpFileName := fileName + "~"
+        <span class="cov8" title="1">tmpFileName := fileName + "~"
         oFile, err := os.Create(tmpFileName)
         if err != nil </span><span class="cov0" title="0">{
                 return err
         }</span>
 
-        <span class="cov0" title="0">s := ""
+        <span class="cov8" title="1">s := ""
         iScanner := bufio.NewScanner(iFile)
-        for i := 0; iScanner.Scan(); i++ </span><span class="cov0" title="0">{
+        for i := 0; iScanner.Scan(); i++ </span><span class="cov8" title="1">{
                 s = iScanner.Text()
                 s, err = ConvertStrCodePage(s, fromCP, toCP)
-                if err != nil </span><span class="cov0" title="0">{
+                if err != nil </span><span class="cov8" title="1">{
                         fmt.Printf("error on file '%s' convert\n", fileName)
                         return err
                 }</span>
-                <span class="cov0" title="0">fmt.Fprintf(oFile, "%s\n", s)</span>
+                <span class="cov8" title="1">fmt.Fprintf(oFile, "%s\n", s)</span>
         }
         <span class="cov0" title="0">iFile.Close()
         oFile.Close()
@@ -277,29 +277,29 @@ func ChangeFileExt(iFileName, newExt string) string <span class="cov8" title="1"
 }</span>
 
 //ConvertStrCodePage - convert string from one code page to another
-func ConvertStrCodePage(s string, fromCP, toCP int64) (string, error) <span class="cov0" title="0">{
-        if len(s) == 0 </span><span class="cov0" title="0">{
+func ConvertStrCodePage(s string, fromCP, toCP int64) (string, error) <span class="cov8" title="1">{
+        if len(s) == 0 </span><span class="cov8" title="1">{
                 return "", nil
         }</span>
-        <span class="cov0" title="0">if fromCP == toCP </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if fromCP == toCP </span><span class="cov8" title="1">{
                 return s, nil
         }</span>
 
-        <span class="cov0" title="0">var err error
+        <span class="cov8" title="1">var err error
 
         switch fromCP </span>{
-        case Cp866:<span class="cov0" title="0">
+        case Cp866:<span class="cov8" title="1">
                 s, _, err = transform.String(charmap.CodePage866.NewDecoder(), s)</span>
-        case CpWindows1251:<span class="cov0" title="0">
+        case CpWindows1251:<span class="cov8" title="1">
                 s, _, err = transform.String(charmap.Windows1251.NewDecoder(), s)</span>
         }
-        <span class="cov0" title="0">switch toCP </span>{
-        case Cp866:<span class="cov0" title="0">
+        <span class="cov8" title="1">switch toCP </span>{
+        case Cp866:<span class="cov8" title="1">
                 s, _, err = transform.String(charmap.CodePage866.NewEncoder(), s)</span>
-        case CpWindows1251:<span class="cov0" title="0">
+        case CpWindows1251:<span class="cov8" title="1">
                 s, _, err = transform.String(charmap.Windows1251.NewEncoder(), s)</span>
         }
-        <span class="cov0" title="0">return s, err</span>
+        <span class="cov8" title="1">return s, err</span>
 }
 
 //CodePageAsString - return string is name of char set with id cp

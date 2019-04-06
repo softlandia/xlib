@@ -74,6 +74,11 @@ func TestReplaceCpFile(t *testing.T) {
 	if err != nil {
 		t.Errorf("<ReplaceCpFile> on fromCp == toCp expected error, got: %v", err)
 	}
+
+	err = ReplaceCpFile("test4.txt", Cp866, CpWindows1251)
+	if err != nil {
+		t.Errorf("<ReplaceCpFile> expected no error, got: %v", err)
+	}
 }
 
 //FileExists
