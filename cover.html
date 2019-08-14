@@ -54,9 +54,9 @@
 			<div id="nav">
 				<select id="files">
 				
-				<option value="file0">github.com/softlandia/xlib/xFileUtil.go (92.0%)</option>
+				<option value="file0">github.com/softlandia/xlib/xFileUtil.go (96.1%)</option>
 				
-				<option value="file1">github.com/softlandia/xlib/xStrUtil.go (78.3%)</option>
+				<option value="file1">github.com/softlandia/xlib/xStrUtil.go (89.6%)</option>
 				
 				</select>
 			</div>
@@ -110,13 +110,10 @@ func CodePageDetect(fn string, stopStr ...string) (int, error) <span class="cov8
         }</span>
         <span class="cov8" title="1">defer iFile.Close()
 
-        //определять страницу считывая файл только до строки stopStr
-        scanToStr := (len(stopStr) &gt; 0)
-
         iScanner := bufio.NewScanner(iFile)
         for i := 0; iScanner.Scan(); i++ </span><span class="cov8" title="1">{
                 s := iScanner.Text()
-                if scanToStr </span><span class="cov8" title="1">{
+                if len(stopStr) &gt; 0 </span><span class="cov8" title="1">{
                         if strings.Contains(s, stopStr[0]) </span><span class="cov8" title="1">{ //stopStr[0] - строка, stopStr - слайс строк
                                 break</span>
                         }
@@ -183,6 +180,9 @@ func FileExists(name string) bool <span class="cov8" title="1">{
 }</span>
 
 //FindFilesExt - search all files in path with 'ext' &amp; put to list
+//path - "c:\tmp"
+//ext  - ".log"
+//sample:  n, err := FindFilesExt(&amp;fl, "c:\\tmp", ".log")
 func FindFilesExt(fileList *[]string, path, fileNameExt string) (int, error) <span class="cov8" title="1">{
         if fileList == nil </span><span class="cov8" title="1">{
                 return 0, errors.New("first parameter 'fileList' is nil")
@@ -210,8 +210,8 @@ func FindFilesExt(fileList *[]string, path, fileNameExt string) (int, error) <sp
         <span class="cov8" title="1">return i, err</span>
 }
 
-//ReplaceCpFile - replace code page text file from one to another
-func ReplaceCpFile(fileName string, fromCP, toCP int64) error <span class="cov8" title="1">{
+//FileConvertCodePage - replace code page text file from one to another
+func FileConvertCodePage(fileName string, fromCP, toCP int64) error <span class="cov8" title="1">{
         if fromCP == toCP </span><span class="cov8" title="1">{
                 return nil
         }</span>
@@ -220,26 +220,30 @@ func ReplaceCpFile(fileName string, fromCP, toCP int64) error <span class="cov8"
         if err != nil </span><span class="cov8" title="1">{
                 return err
         }</span>
+        <span class="cov8" title="1">defer iFile.Close()
+
         //TODO need using sytem tmp folder
-        <span class="cov8" title="1">tmpFileName := fileName + "~"
+        tmpFileName := fileName + "~"
         oFile, err := os.Create(tmpFileName)
         if err != nil </span><span class="cov0" title="0">{
                 return err
         }</span>
+        <span class="cov8" title="1">defer oFile.Close()
 
-        <span class="cov8" title="1">s := ""
+        s := ""
         iScanner := bufio.NewScanner(iFile)
         for i := 0; iScanner.Scan(); i++ </span><span class="cov8" title="1">{
                 s = iScanner.Text()
-                s, err = ConvertStrCodePage(s, fromCP, toCP)
+                s, err = StrConvertCodePage(s, fromCP, toCP)
                 if err != nil </span><span class="cov8" title="1">{
-                        fmt.Printf("error on file '%s' convert\n", fileName)
-                        return err
+                        oFile.Close()
+                        os.Remove(tmpFileName)
+                        return fmt.Errorf("cde page convert error on file '%s': %v", fileName, err)
                 }</span>
                 <span class="cov8" title="1">fmt.Fprintf(oFile, "%s\n", s)</span>
         }
-        <span class="cov0" title="0">iFile.Close()
-        oFile.Close()
+        <span class="cov8" title="1">oFile.Close()
+        iFile.Close()
         return os.Rename(tmpFileName, fileName)</span>
 }
 </pre>
@@ -276,8 +280,8 @@ func ChangeFileExt(iFileName, newExt string) string <span class="cov8" title="1"
         return strings.TrimSuffix(iFileName, filepath.Ext(iFileName)) + newExt
 }</span>
 
-//ConvertStrCodePage - convert string from one code page to another
-func ConvertStrCodePage(s string, fromCP, toCP int64) (string, error) <span class="cov8" title="1">{
+//StrConvertCodePage - convert string from one code page to another
+func StrConvertCodePage(s string, fromCP, toCP int64) (string, error) <span class="cov8" title="1">{
         if len(s) == 0 </span><span class="cov8" title="1">{
                 return "", nil
         }</span>
@@ -314,6 +318,73 @@ func CodePageAsString(cp int) string <span class="cov0" title="0">{
         default:<span class="cov0" title="0">
                 return CpEmptyAsStr</span>
         }
+}
+
+//ContainsOtherRune - return true if sting s contains any other rune not in runes
+//on empty parameters - return false, -1
+func ContainsOtherRune(s string, runes ...rune) (bool, int) <span class="cov8" title="1">{
+        var (
+                i int
+                r rune
+        )
+        if (len(s) == 0) || (len(runes) == 0) </span><span class="cov8" title="1">{
+                return false, -1
+        }</span>
+        <span class="cov8" title="1">for i, r = range s </span><span class="cov8" title="1">{
+                res := true
+                for _, sr := range runes </span><span class="cov8" title="1">{
+                        res = (res &amp;&amp; (r != sr))
+                }</span>
+                <span class="cov8" title="1">if res </span><span class="cov8" title="1">{
+                        return res, i
+                }</span>
+        }
+        <span class="cov8" title="1">return false, 0</span>
+}
+
+//StrCopyStop - return s, stop on rune in stopRune
+func StrCopyStop(s string, stopRune ...rune) (string, int) <span class="cov8" title="1">{
+        var (
+                i int
+                r rune
+        )
+        if len(stopRune) &gt; 0 </span><span class="cov8" title="1">{
+                for i, r = range s </span><span class="cov8" title="1">{
+                        for _, sr := range stopRune </span><span class="cov8" title="1">{
+                                if r == sr </span><span class="cov8" title="1">{
+                                        return s[:i], i
+                                }</span>
+                        }
+                }
+        }
+        <span class="cov8" title="1">return s, len(s)</span>
+}
+
+//ReplaceAllSpace - return string with one space
+func ReplaceAllSpace(s string) string <span class="cov8" title="1">{
+        for strings.Index(s, "  ") &gt;= 0 </span><span class="cov8" title="1">{
+                s = strings.ReplaceAll(s, "  ", " ")
+        }</span>
+        <span class="cov8" title="1">return s</span>
+}
+
+//ReplaceSeparators - return string with one separator rune
+// ' .' &gt;&gt; '.' // '. ' &gt;&gt; '.' // ' :' &gt;&gt; ':' // ': ' &gt;&gt; ':'
+func ReplaceSeparators(s string) string <span class="cov8" title="1">{
+        type TSeparatorsReplacement struct {
+                old string
+                new string
+        }
+        var SeparatorsList = []TSeparatorsReplacement{
+                {" .", "."},
+                {". ", "."},
+                {" :", ":"},
+                {": ", ":"},
+        }
+        for _, sep := range SeparatorsList </span><span class="cov8" title="1">{
+                s = strings.ReplaceAll(s, sep.old, sep.new)
+        }</span>
+        <span class="cov8" title="1">return s</span>
 }
 </pre>
 		

@@ -38,13 +38,10 @@ func CodePageDetect(fn string, stopStr ...string) (int, error) {
 	}
 	defer iFile.Close()
 
-	//определять страницу считывая файл только до строки stopStr
-	scanToStr := (len(stopStr) > 0)
-
 	iScanner := bufio.NewScanner(iFile)
 	for i := 0; iScanner.Scan(); i++ {
 		s := iScanner.Text()
-		if scanToStr {
+		if len(stopStr) > 0 {
 			if strings.Contains(s, stopStr[0]) { //stopStr[0] - строка, stopStr - слайс строк
 				break
 			}
@@ -111,6 +108,9 @@ func FileExists(name string) bool {
 }
 
 //FindFilesExt - search all files in path with 'ext' & put to list
+//path - "c:\tmp"
+//ext  - ".log"
+//sample:  n, err := FindFilesExt(&fl, "c:\\tmp", ".log")
 func FindFilesExt(fileList *[]string, path, fileNameExt string) (int, error) {
 	if fileList == nil {
 		return 0, errors.New("first parameter 'fileList' is nil")
@@ -138,8 +138,8 @@ func FindFilesExt(fileList *[]string, path, fileNameExt string) (int, error) {
 	return i, err
 }
 
-//ReplaceCpFile - replace code page text file from one to another
-func ReplaceCpFile(fileName string, fromCP, toCP int64) error {
+//FileConvertCodePage - replace code page text file from one to another
+func FileConvertCodePage(fileName string, fromCP, toCP int64) error {
 	if fromCP == toCP {
 		return nil
 	}
@@ -148,25 +148,29 @@ func ReplaceCpFile(fileName string, fromCP, toCP int64) error {
 	if err != nil {
 		return err
 	}
+	defer iFile.Close()
+
 	//TODO need using sytem tmp folder
 	tmpFileName := fileName + "~"
 	oFile, err := os.Create(tmpFileName)
 	if err != nil {
 		return err
 	}
+	defer oFile.Close()
 
 	s := ""
 	iScanner := bufio.NewScanner(iFile)
 	for i := 0; iScanner.Scan(); i++ {
 		s = iScanner.Text()
-		s, err = ConvertStrCodePage(s, fromCP, toCP)
+		s, err = StrConvertCodePage(s, fromCP, toCP)
 		if err != nil {
-			fmt.Printf("error on file '%s' convert\n", fileName)
-			return err
+			oFile.Close()
+			os.Remove(tmpFileName)
+			return fmt.Errorf("cde page convert error on file '%s': %v", fileName, err)
 		}
 		fmt.Fprintf(oFile, "%s\n", s)
 	}
-	iFile.Close()
 	oFile.Close()
+	iFile.Close()
 	return os.Rename(tmpFileName, fileName)
 }

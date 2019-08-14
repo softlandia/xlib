@@ -1,13 +1,15 @@
+//(c) softland 2019
+//softlandia@gmail.com
 package xlib
 
 import (
+	"os"
 	"testing"
 )
 
 //CodePageDetect
-
 func TestCodePageDetect(t *testing.T) {
-	res, err := CodePageDetect("test.txt", "~X~")
+	res, err := CodePageDetect("test_files\\test.txt", "~X~")
 	if err != nil {
 		t.Errorf("<CodePageDetect> on file '%s' return error: %v", "test.txt", err)
 	}
@@ -15,7 +17,7 @@ func TestCodePageDetect(t *testing.T) {
 		t.Errorf("<CodePageDetect> on file '%s' expected 866 got: %s", "test.txt", CodePageAsString(res))
 	}
 
-	res, err = CodePageDetect("test.txt")
+	res, err = CodePageDetect("test_files\\test.txt")
 	if res != CpWindows1251 {
 		t.Errorf("<CodePageDetect> on file '%s' expected 1251 got: %s", "test.txt", CodePageAsString(res))
 	}
@@ -25,12 +27,12 @@ func TestCodePageDetect(t *testing.T) {
 		t.Errorf("<CodePageDetect> on file '-.-' must return error, but return nil")
 	}
 
-	res, _ = CodePageDetect("test2.txt")
+	res, _ = CodePageDetect("test_files\\test2.txt")
 	if res != CpEmpty {
 		t.Errorf("<CodePageDetect> on file 'test2.txt' expect CpEmpty got: %s", CodePageAsString(res))
 	}
 
-	res, err = CodePageDetect("test3.txt")
+	res, err = CodePageDetect("test_files\\test3.txt")
 	if (res != CpEmpty) || (err != nil) {
 		t.Errorf("<CodePageDetect> on file 'test3.txt' expect CpEmpty and no error got: %s and %v", CodePageAsString(res), err)
 	}
@@ -43,7 +45,7 @@ func TestSeekFileToString(t *testing.T) {
 		t.Errorf("<CodePageDetect> on file '-.-' must return error, but return nil")
 	}
 
-	index, scanner, err := SeekFileToString("test.txt", "~A")
+	index, scanner, err := SeekFileToString("test_files\\test.txt", "~A")
 	if scanner == nil {
 		t.Errorf("<CodePageDetect> on file 'test.txt' return scanner == nil")
 	}
@@ -52,33 +54,40 @@ func TestSeekFileToString(t *testing.T) {
 		t.Errorf("<SeekFileToString> on line: %d must be string '<OK>'\n", index)
 	}
 
-	index, scanner, err = SeekFileToString("test.txt", "")
+	index, scanner, err = SeekFileToString("test_files\\test.txt", "")
 	if index >= 0 {
 		t.Errorf("<SeekFileToString> on empty seek str == '' must return index < 0 [-1], return: %d", index)
 	}
 
-	index, scanner, err = SeekFileToString("test3.txt", "~")
+	index, scanner, err = SeekFileToString("test_files\\test3.txt", "~")
 	if index >= 0 {
 		t.Errorf("<SeekFileToString> on file 'test3.txt' and seek str == '~' must return index < 0 [-1], return: %d", index)
 	}
 }
 
-//ReplaceCpFile
-func TestReplaceCpFile(t *testing.T) {
-	err := ReplaceCpFile("", 0, 1)
+//FileConvertCodePage
+func TestFileConvertCodePage(t *testing.T) {
+	err := FileConvertCodePage("", 0, 1)
 	if err == nil {
-		t.Errorf("<ReplaceCpFile> on empty file name expected error, got: %v", err)
+		t.Errorf("<FileConvertCodePage> on empty file name expected error, got: %v", err)
 	}
 
-	err = ReplaceCpFile("", 0, 0)
+	err = FileConvertCodePage("", 0, 0)
 	if err != nil {
-		t.Errorf("<ReplaceCpFile> on fromCp == toCp expected error, got: %v", err)
+		t.Errorf("<FileConvertCodePage> on fromCp == toCp expected error==nil, got: %v", err)
 	}
 
-	err = ReplaceCpFile("test4.txt", Cp866, CpWindows1251)
-	if err != nil {
-		t.Errorf("<ReplaceCpFile> expected no error, got: %v", err)
+	err = FileConvertCodePage("test_files\\test4.txt", Cp866, CpWindows1251)
+	if err == nil {
+		t.Errorf("<FileConvertCodePage> expected error, got: %v", err)
 	}
+
+	os.Link("test_files\\test5.txt", "test_files\\test5.tmp.txt")
+	err = FileConvertCodePage("test_files\\test5.tmp.txt", Cp866, CpWindows1251)
+	if err != nil {
+		t.Errorf("<FileConvertCodePage> expect no err, got: %v", err)
+	}
+	os.Remove("test_files\\test5.tmp.txt")
 }
 
 //FileExists
@@ -86,7 +95,7 @@ func TestFileExists(t *testing.T) {
 	if FileExists("-.-") {
 		t.Errorf("<FileExists> return true on non exist file '-.-'")
 	}
-	if !FileExists("test.txt") || !FileExists("test2.txt") || !FileExists("test3.txt") {
+	if !FileExists("test_files\\test.txt") || !FileExists("test_files\\test2.txt") || !FileExists("test_files\\test3.txt") {
 		t.Error("<FileExists> return false on exist files: test.txt, test2.txt, test3.txt")
 	}
 }
@@ -102,7 +111,7 @@ func TestFindFilesExt(t *testing.T) {
 
 	fl := make([]string, 0, 10)
 	n, err := FindFilesExt(&fl, ".", ".txt")
-	if n != 3 {
+	if n != 5 {
 		t.Errorf("<FindFilesExt> on current folder must found 3 '.txt', return: %d", n)
 	}
 }

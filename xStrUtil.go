@@ -30,8 +30,8 @@ func ChangeFileExt(iFileName, newExt string) string {
 	return strings.TrimSuffix(iFileName, filepath.Ext(iFileName)) + newExt
 }
 
-//ConvertStrCodePage - convert string from one code page to another
-func ConvertStrCodePage(s string, fromCP, toCP int64) (string, error) {
+//StrConvertCodePage - convert string from one code page to another
+func StrConvertCodePage(s string, fromCP, toCP int64) (string, error) {
 	if len(s) == 0 {
 		return "", nil
 	}
@@ -68,4 +68,71 @@ func CodePageAsString(cp int) string {
 	default:
 		return CpEmptyAsStr
 	}
+}
+
+//ContainsOtherRune - return true if sting s contains any other rune not in runes
+//on empty parameters - return false, -1
+func ContainsOtherRune(s string, runes ...rune) (bool, int) {
+	var (
+		i int
+		r rune
+	)
+	if (len(s) == 0) || (len(runes) == 0) {
+		return false, -1
+	}
+	for i, r = range s {
+		res := true
+		for _, sr := range runes {
+			res = (res && (r != sr))
+		}
+		if res {
+			return res, i
+		}
+	}
+	return false, 0
+}
+
+//StrCopyStop - return s, stop on rune in stopRune
+func StrCopyStop(s string, stopRune ...rune) (string, int) {
+	var (
+		i int
+		r rune
+	)
+	if len(stopRune) > 0 {
+		for i, r = range s {
+			for _, sr := range stopRune {
+				if r == sr {
+					return s[:i], i
+				}
+			}
+		}
+	}
+	return s, len(s)
+}
+
+//ReplaceAllSpace - return string with one space
+func ReplaceAllSpace(s string) string {
+	for strings.Index(s, "  ") >= 0 {
+		s = strings.ReplaceAll(s, "  ", " ")
+	}
+	return s
+}
+
+//ReplaceSeparators - return string with one separator rune
+// ' .' >> '.' // '. ' >> '.' // ' :' >> ':' // ': ' >> ':'
+func ReplaceSeparators(s string) string {
+	type TSeparatorsReplacement struct {
+		old string
+		new string
+	}
+	var SeparatorsList = []TSeparatorsReplacement{
+		{" .", "."},
+		{". ", "."},
+		{" :", ":"},
+		{": ", ":"},
+	}
+	for _, sep := range SeparatorsList {
+		s = strings.ReplaceAll(s, sep.old, sep.new)
+	}
+	return s
 }
