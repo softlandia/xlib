@@ -5,6 +5,7 @@ import (
 	"strings"
 	"unicode"
 
+	"github.com/softlandia/xlib/internal/cp"
 	"golang.org/x/text/encoding/charmap"
 	"golang.org/x/text/transform"
 )
@@ -31,7 +32,7 @@ func ChangeFileExt(iFileName, newExt string) string {
 }
 
 //StrConvertCodePage - convert string from one code page to another
-func StrConvertCodePage(s string, fromCP, toCP int64) (string, error) {
+func StrConvertCodePage(s string, fromCP, toCP uint16) (string, error) {
 	if len(s) == 0 {
 		return "", nil
 	}
@@ -42,35 +43,27 @@ func StrConvertCodePage(s string, fromCP, toCP int64) (string, error) {
 	var err error
 
 	switch fromCP {
-	case Cp866:
+	case cp.IBM866:
 		s, _, err = transform.String(charmap.CodePage866.NewDecoder(), s)
-	case CpWindows1251:
+	case cp.Windows1251:
 		s, _, err = transform.String(charmap.Windows1251.NewDecoder(), s)
 	}
 	switch toCP {
-	case Cp866:
+	case cp.IBM866:
 		s, _, err = transform.String(charmap.CodePage866.NewEncoder(), s)
-	case CpWindows1251:
+	case cp.Windows1251:
 		s, _, err = transform.String(charmap.Windows1251.NewEncoder(), s)
 	}
 	return s, err
 }
 
-//CodePageAsString - return string is name of char set with id cp
-func CodePageAsString(cp int) string {
-	switch cp {
-	case Cp866:
-		return Cp866AsStr
-	case CpWindows1251:
-		return CpWindows1251AsStr
-	case CpUtf8:
-		return CpUtf8AsStr
-	default:
-		return CpEmptyAsStr
-	}
+// CodePageAsString - return name of char set with id codepage
+// if codepage not exist - return ""
+func CodePageAsString(codepage uint16) string {
+	return cp.Name[codepage]
 }
 
-//ContainsOtherRune - return true if sting s contains any other rune not in runes
+//ContainsOtherRune - if sting s contains any other rune not in runes then return true and position of first this rune
 //on empty parameters - return false, -1
 func ContainsOtherRune(s string, runes ...rune) (bool, int) {
 	var (

@@ -8,6 +8,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/softlandia/xlib/internal/cp"
 )
 
 const (
@@ -24,8 +26,9 @@ const (
 //CodePageDetect - detect code page of file
 //return 0 if code page can not be detected
 //return const xlib.CpWindows1251 for Windows code page 1251
-//return const clib.Cp866 for IBM 866 code page
-func CodePageDetect(fn string, stopStr ...string) (int, error) {
+//return const xlib.Cp866 for IBM 866 code page
+//EF-BB-BF utf-8 bom
+func CodePageDetect(fn string, stopStr ...string) (uint16, error) {
 	var (
 		r      rune
 		cp1251 int
@@ -34,7 +37,7 @@ func CodePageDetect(fn string, stopStr ...string) (int, error) {
 
 	iFile, err := os.Open(fn)
 	if err != nil {
-		return CpEmpty, err
+		return cp.ASCII, err
 	}
 	defer iFile.Close()
 
@@ -68,11 +71,11 @@ func CodePageDetect(fn string, stopStr ...string) (int, error) {
 	}
 	switch {
 	case cp1251 > cp866:
-		return CpWindows1251, nil
+		return cp.Windows1251, nil
 	case cp1251 < cp866:
-		return Cp866, nil
+		return cp.IBM866, nil
 	}
-	return CpEmpty, nil
+	return cp.ASCII, nil
 }
 
 //SeekFileToString - search string in text file and return *bufio.Scanner at founded line
@@ -139,7 +142,7 @@ func FindFilesExt(fileList *[]string, path, fileNameExt string) (int, error) {
 }
 
 //FileConvertCodePage - replace code page text file from one to another
-func FileConvertCodePage(fileName string, fromCP, toCP int64) error {
+func FileConvertCodePage(fileName string, fromCP, toCP uint16) error {
 	if fromCP == toCP {
 		return nil
 	}

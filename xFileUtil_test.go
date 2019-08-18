@@ -5,6 +5,8 @@ package xlib
 import (
 	"os"
 	"testing"
+
+	"github.com/softlandia/xlib/internal/cp"
 )
 
 //CodePageDetect
@@ -13,12 +15,12 @@ func TestCodePageDetect(t *testing.T) {
 	if err != nil {
 		t.Errorf("<CodePageDetect> on file '%s' return error: %v", "test.txt", err)
 	}
-	if res != Cp866 {
+	if res != cp.IBM866 {
 		t.Errorf("<CodePageDetect> on file '%s' expected 866 got: %s", "test.txt", CodePageAsString(res))
 	}
 
 	res, err = CodePageDetect("test_files\\test.txt")
-	if res != CpWindows1251 {
+	if res != cp.Windows1251 {
 		t.Errorf("<CodePageDetect> on file '%s' expected 1251 got: %s", "test.txt", CodePageAsString(res))
 	}
 
@@ -28,12 +30,12 @@ func TestCodePageDetect(t *testing.T) {
 	}
 
 	res, _ = CodePageDetect("test_files\\test2.txt")
-	if res != CpEmpty {
+	if res != cp.ASCII {
 		t.Errorf("<CodePageDetect> on file 'test2.txt' expect CpEmpty got: %s", CodePageAsString(res))
 	}
 
 	res, err = CodePageDetect("test_files\\test3.txt")
-	if (res != CpEmpty) || (err != nil) {
+	if (res != cp.ASCII) || (err != nil) {
 		t.Errorf("<CodePageDetect> on file 'test3.txt' expect CpEmpty and no error got: %s and %v", CodePageAsString(res), err)
 	}
 }
@@ -77,13 +79,13 @@ func TestFileConvertCodePage(t *testing.T) {
 		t.Errorf("<FileConvertCodePage> on fromCp == toCp expected error==nil, got: %v", err)
 	}
 
-	err = FileConvertCodePage("test_files\\test4.txt", Cp866, CpWindows1251)
+	err = FileConvertCodePage("test_files\\test4.txt", cp.IBM866, cp.Windows1251)
 	if err == nil {
 		t.Errorf("<FileConvertCodePage> expected error, got: %v", err)
 	}
 
 	os.Link("test_files\\test5.txt", "test_files\\test5.tmp.txt")
-	err = FileConvertCodePage("test_files\\test5.tmp.txt", Cp866, CpWindows1251)
+	err = FileConvertCodePage("test_files\\test5.tmp.txt", cp.IBM866, cp.Windows1251)
 	if err != nil {
 		t.Errorf("<FileConvertCodePage> expect no err, got: %v", err)
 	}

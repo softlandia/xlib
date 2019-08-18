@@ -5,17 +5,8 @@ const Epsilon float64 = 0.01
 
 //
 const (
-	//CpEmpty not define code page
-	CpEmpty      = 0
-	CpEmptyAsStr = "undefine"
-	//Windows1251 is the Windows 1251 code page
-	CpWindows1251      = 1
-	CpWindows1251AsStr = "1251"
-	//CodePage866 is the IBM Code Page 866
-	Cp866      = 2
-	Cp866AsStr = "866"
-	//CodePageUtf8
-	CpUtf8      = 3
-	CpUtf8AsStr = "UTF8"
+//CpEmpty = cp.ASCII
+//CpWindows1251 = cp.Windows1251
+//Cp866 = cp.IBM866
+//CpUtf8 = cp.UTF8
 )
-
