@@ -2,32 +2,7 @@ package xlib
 
 import (
 	"testing"
-
-	"github.com/softlandia/xlib/internal/cp"
 )
-
-//StrContainBackSlash
-type tCodePageAsString struct {
-	id uint16
-	s  string
-}
-
-var dCodePageAsString = []tCodePageAsString{
-	{0, ""},
-	{3, "ASCII"},
-	{cp.IBM866, "IBM866"},
-	{cp.Windows1251, "Windows1251"},
-	{60000, ""},
-}
-
-func TestCodePageAsString(t *testing.T) {
-	for i, v := range dCodePageAsString {
-		s := CodePageAsString(v.id)
-		if s != v.s {
-			t.Errorf("<CodePageAsString> on test: %d return: %s, expected: %s", i, s, v.s)
-		}
-	}
-}
 
 //StrContainBackSlash
 type testpairStrContainBackSlash struct {
@@ -40,6 +15,7 @@ var testsStrContainBackSlash = []testpairStrContainBackSlash{
 	{"consist back slash \\ in middle", true},
 	{"\\consist back slash at start", true},
 	{"\\", true},
+	{"", false},
 	{"non consist back slash", false},
 }
 
@@ -88,26 +64,6 @@ func TestChangeFileExt(t *testing.T) {
 		if s != tmp.oName {
 			t.Errorf("<ChangeFileExt> on test %d for input: '%s' expected: '%s' got: '%s'", i, tmp.iName, tmp.oName, s)
 		}
-	}
-}
-
-//ConvertCodePage
-func TestStrConvertCodePage(t *testing.T) {
-	_, err := StrConvertCodePage("1234", cp.IBM866, cp.Windows1251)
-	if err != nil {
-		t.Errorf("<StrConvertCodePage> on test 1 return unexpected err: %v", err)
-	}
-	_, err = StrConvertCodePage("1234", cp.Windows1251, cp.IBM866)
-	if err != nil {
-		t.Errorf("<StrConvertCodePage> on test 2 return unexpected err: %v", err)
-	}
-	_, err = StrConvertCodePage("", cp.IBM866, cp.Windows1251)
-	if err != nil {
-		t.Errorf("<StrConvertCodePage> with empty string must return ERROR, but retrurn: %v", err)
-	}
-	_, err = StrConvertCodePage("1234", cp.IBM866, cp.IBM866)
-	if err != nil {
-		t.Errorf("<StrConvertCodePage> with equal fromCP and toCp must return nil, but retrurn: %v", err)
 	}
 }
 
