@@ -1,7 +1,10 @@
 package xlib
 
 import (
+	"fmt"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 //StrContainBackSlash
@@ -96,17 +99,11 @@ func TestReplaceSeparators(t *testing.T) {
 
 func TestReplaceAllSpace(t *testing.T) {
 	s := ReplaceAllSpace("a  b  c")
-	if s != "a b c" {
-		t.Errorf("<ReplaceAllString> return '%s' expect 'a b c'\n", s)
-	}
+	assert.Equal(t, s, "a b c", fmt.Sprintf("<ReplaceAllString> return '%s' expect 'a b c'\n", s))
 	s = ReplaceAllSpace("a   b   c")
-	if s != "a b c" {
-		t.Errorf("<ReplaceAllString> return '%s' expect 'a b c'\n", s)
-	}
+	assert.Equal(t, s, "a b c", fmt.Sprintf("<ReplaceAllString> return '%s' expect 'a b c'\n", s))
 	s = ReplaceAllSpace("   a   b   c   ")
-	if s != " a b c " {
-		t.Errorf("<ReplaceAllString> return '%s' expect ' a b c '\n", s)
-	}
+	assert.Equal(t, s, " a b c ", fmt.Sprintf("<ReplaceAllString> return '%s' expect ' a b c '\n", s))
 }
 
 //ContainsOtherRune
@@ -193,34 +190,20 @@ var dStrCopyStop3 = []tStrCopyStop{
 
 func TestStrCopyStop(t *testing.T) {
 	s, i := StrCopyStop("")
-	if s != "" {
-		t.Errorf("<StrCopyStop> on special test return: '%s', expect: '%s'\n", s, "ts: s")
-	}
-	if i != 0 {
-		t.Errorf("<StrCopyStop> on special test return index: '%d', expect: '%d'\n", i, 0)
-	}
+	assert.Equal(t, "", s, fmt.Sprintf("<StrCopyStop> on special test return: '%s', expect: '%s'\n", s, "ts: s"))
+	assert.Equal(t, 0, i, fmt.Sprintf("<StrCopyStop> on special test return index: '%d', expect: '%d'\n", i, 0))
 	s, _ = StrCopyStop("ts: s")
-	if s != "ts: s" {
-		t.Errorf("<StrCopyStop> on special test return: '%s', expect: '%s'\n", s, "ts: s")
-	}
+	assert.Equal(t, "ts: s", s, fmt.Sprintf("<StrCopyStop> on special test return: '%s', expect: '%s'\n", s, "ts: s"))
 	//space only
 	for i, ts := range dStrCopyStop1 {
 		s, n := StrCopyStop(ts.s, ' ')
-		if s != ts.r {
-			t.Errorf("<StrCopyStop> on state 1 test %d return: '%s', expect: '%s'\n", i, s, ts.r)
-		}
-		if n != ts.n {
-			t.Errorf("<StrCopyStop> on state 1 test %d return count: '%d', expect: '%d'\n", i, n, ts.n)
-		}
+		assert.Equal(t, ts.r, s, fmt.Sprintf("<StrCopyStop> on state 1 test %d return: '%s', expect: '%s'\n", i, s, ts.r))
+		assert.Equal(t, ts.n, n, fmt.Sprintf("<StrCopyStop> on state 1 test %d return count: '%d', expect: '%d'\n", i, n, ts.n))
 	}
 	//space and comma
 	for i, ts := range dStrCopyStop3 {
 		s, n := StrCopyStop(ts.s, ':', ' ')
-		if s != ts.r {
-			t.Errorf("<StrCopyStop> on state 3 test %d return: '%s', expect: '%s'\n", i, s, ts.r)
-		}
-		if n != ts.n {
-			t.Errorf("<StrCopyStop> on state 3 test %d return count: '%d', expect: '%d'\n", i, n, ts.n)
-		}
+		assert.Equal(t, ts.r, s, fmt.Sprintf("<StrCopyStop> on state 3 test %d return: '%s', expect: '%s'\n", i, s, ts.r))
+		assert.Equal(t, ts.n, n, fmt.Sprintf("<StrCopyStop> on state 3 test %d return count: '%d', expect: '%d'\n", i, n, ts.n))
 	}
 }

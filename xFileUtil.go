@@ -15,6 +15,7 @@ import (
 //		"", error if can't open file
 //		one string with all rune, strStop not include
 //! end of line ignored
+//TODO change += to string builder
 func ReadFileStop(fileName, strStop string) (string, error) {
 	res := ""
 	if len(strStop) == 0 {
@@ -47,7 +48,6 @@ func ReadFileStop(fileName, strStop string) (string, error) {
 //return (0, nil, err) if file not open or error occure when file reading
 //successfull opened file NOT CLOSED in any case!
 //strToSearch must contain only base ASCII rune
-//TODO: rename func to SeekFileStop
 func SeekFileStop(fileName, strToSearch string) (int, *bufio.Scanner, error) {
 	if len(strToSearch) == 0 {
 		return -1, nil, nil
@@ -82,7 +82,7 @@ func FindFilesExt(fileList *[]string, path, fileNameExt string) (int, error) {
 		return 0, errors.New("first parameter 'fileList' is nil")
 	}
 	extFile := strings.ToUpper(fileNameExt)
-	i := 0 //index founded files
+	index := 0 //index founded files
 	err := filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			log.Printf("prevent panic by handling failure accessing a path %q: %v\n", path, err)
@@ -97,9 +97,9 @@ func FindFilesExt(fileList *[]string, path, fileNameExt string) (int, error) {
 			return nil
 		}
 		//file found
-		i++
+		index++
 		*fileList = append(*fileList, path)
 		return nil
 	})
-	return i, err
+	return index, err
 }
