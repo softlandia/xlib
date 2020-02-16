@@ -23,21 +23,22 @@ func ReadFileStop(fileName, strStop string) (string, error) {
 	}
 
 	iFile, err := os.Open(fileName)
-	defer iFile.Close()
 	if err != nil {
 		return res, err
 	}
+	defer iFile.Close()
 	iScanner := bufio.NewScanner(iFile)
+	var sb strings.Builder
 	for i := 0; iScanner.Scan(); i++ {
 		s := iScanner.Text()
 		pos := strings.Index(s, strStop)
 		if pos > 0 {
-			res += s[:pos]
-			return res, nil
+			sb.WriteString(s[:pos])
+			return sb.String(), nil
 		}
-		res += s
+		sb.WriteString(s)
 	}
-	return res, iScanner.Err()
+	return sb.String(), iScanner.Err()
 }
 
 //SeekFileStop - search string in text file and return *bufio.Scanner at founded line
@@ -93,10 +94,9 @@ func FindFilesExt(fileList *[]string, path, fileNameExt string) (int, error) {
 			return nil
 		}
 		if strings.ToUpper(filepath.Ext(path)) != extFile {
-			//skip folders and files with extention not extFile
+			//skip files with wrong extention
 			return nil
 		}
-		//file found
 		index++
 		*fileList = append(*fileList, path)
 		return nil

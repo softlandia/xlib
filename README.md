@@ -5,19 +5,25 @@
 >download: go get -u github.com/softlandia/xlib  
 >install: go install
 
-## dependences ##
-
-std lib
-
 ## functions ##
 
-    func StrContainBackSlash(s string) bool  //return true if string s consist rune back slash '\'
+    func StrContainBackSlash(s string) bool
+      return true if string s contain rune back slash '\'
 
-    func StrIsPrintRune(s string) bool  //return true if input string consists only of printable rune
+    func StrIsPrintRune(s string) bool  
+      return true if input string contain only of printable rune
 
-    func ChangeFileExt(iFileName, newExt string) string  //return file name with new extention
+    func ChangeFileExt(iFileName, newExt string) string  
+      return file name with new extention
 
-    func FileExists(name string) bool  //return true if file exist
+    func FileExists(name string) bool  
+      return true if file exist
+
+    func Max(x, y int) int
+      return max from int
+
+    func SortBytes(b []byte) []byte
+      return sorted slice of byte
 
     func SeekFileStop(fileName, strToSearch string) (int, *bufio.Scanner, error)
       search string in text file and return *bufio.Scanner at founded line
@@ -33,8 +39,7 @@ std lib
       search all files in path with 'ext' & put to slice
       sample:  n, err := FindFilesExt(&fl, "c:\\tmp", ".log")
 
-
 ## tests ##
 
-coverage 97%  
+coverage 94%  
 folder "test_files" contain files for testing, no remove/change/add

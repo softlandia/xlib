@@ -69,16 +69,16 @@ func StrCopyStop(s string, stopRune ...rune) (string, int) {
 
 //ReplaceAllSpace - return string with one space
 func ReplaceAllSpace(s string) string {
-	for strings.Index(s, "  ") >= 0 {
+	for strings.Contains(s, "  ") { //strings.Index(s, "  ") >= 0 {
 		s = strings.ReplaceAll(s, "  ", " ")
 	}
 	return s
 }
 
 //ReplaceSeparators - return string with one separator rune
-// ' .' >> '.' 
-// '. ' >> '.' 
-// ' :' >> ':' 
+// ' .' >> '.'
+// '. ' >> '.'
+// ' :' >> ':'
 // ': ' >> ':'
 func ReplaceSeparators(s string) string {
 	type TSeparatorsReplacement struct {
@@ -90,6 +90,8 @@ func ReplaceSeparators(s string) string {
 		{". ", "."},
 		{" :", ":"},
 		{": ", ":"},
+		{":.", ":"},
+		{".:", "."},
 	}
 	for _, sep := range SeparatorsList {
 		s = strings.ReplaceAll(s, sep.old, sep.new)

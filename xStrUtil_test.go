@@ -19,14 +19,12 @@ var testsStrContainBackSlash = []testpairStrContainBackSlash{
 	{"\\consist back slash at start", true},
 	{"\\", true},
 	{"", false},
-	{"non consist back slash", false},
+	{"contains no back slash", false},
 }
 
 func TestStrContainBackSlash(t *testing.T) {
-	for i, tmp := range testsStrContainBackSlash {
-		if StrContainBackSlash(tmp.s) != tmp.r {
-			t.Errorf("<StrContainBackSlash> on %d test expected %v", i, tmp.r)
-		}
+	for _, tmp := range testsStrContainBackSlash {
+		assert.Equal(t, tmp.r, StrContainBackSlash(tmp.s))
 	}
 }
 
@@ -42,10 +40,8 @@ var testsStrIsPrintRune = []testpairStrIsPrintRune{
 }
 
 func TestStrIsPrintRune(t *testing.T) {
-	for i, tmp := range testsStrIsPrintRune {
-		if StrIsPrintRune(tmp.s) != tmp.r {
-			t.Errorf("<StrIsPrintRune> on %d test expected %v", i, tmp.r)
-		}
+	for _, tmp := range testsStrIsPrintRune {
+		assert.Equal(t, tmp.r, StrIsPrintRune(tmp.s))
 	}
 }
 
@@ -62,11 +58,9 @@ var testsChangeFileExt = []testpairChangeFileExt{
 }
 
 func TestChangeFileExt(t *testing.T) {
-	for i, tmp := range testsChangeFileExt {
+	for _, tmp := range testsChangeFileExt {
 		s := ChangeFileExt(tmp.iName, tmp.ext)
-		if s != tmp.oName {
-			t.Errorf("<ChangeFileExt> on test %d for input: '%s' expected: '%s' got: '%s'", i, tmp.iName, tmp.oName, s)
-		}
+		assert.Equal(t, tmp.oName, s)
 	}
 }
 
@@ -82,17 +76,16 @@ var dReplaceSeparators = []TTestReplaceSeparators{
 	{"Ш :л", "Ш:л"},
 	{"Ш : л", "Ш:л"},
 	{"Шаг . ал : фтор", "Шаг.ал:фтор"},
+	{"ШАГ :. ", "ШАГ:"},
 	{" ", " "},
 	{"", ""},
 }
 
 func TestReplaceSeparators(t *testing.T) {
 	s := ""
-	for i, tmp := range dReplaceSeparators {
+	for _, tmp := range dReplaceSeparators {
 		s = ReplaceSeparators(tmp.iStr)
-		if s != tmp.oStr {
-			t.Errorf("<ReplaceSeparators> on test %d return '%s' expect '%s'\n", i, s, tmp.oStr)
-		}
+		assert.Equal(t, tmp.oStr, s)
 	}
 
 }
@@ -125,41 +118,22 @@ var dContainsOtherRune = []tContainsOtherRune{
 
 func TestContainsOtherRune(t *testing.T) {
 	res, n := ContainsOtherRune("")
-	if res || (n > 0) {
-		t.Errorf("<ContainsOtherRune> on 1 empty test return: '%v', and: '%d'\n", res, n)
-	}
+	assert.False(t, res || (n > 0), fmt.Sprintf("<ContainsOtherRune> on 1 empty test return: '%v', and: '%d'\n", res, n))
 	res, n = ContainsOtherRune("ts")
-	if res || (n > 0) {
-		t.Errorf("<ContainsOtherRune> on 2 empty test return: '%v', and: '%d'\n", res, n)
-	}
+	assert.False(t, res || (n > 0), fmt.Sprintf("<ContainsOtherRune> on 2 empty test return: '%v', and: '%d'\n", res, n))
 	res, n = ContainsOtherRune("", '.')
-	if res || (n > 0) {
-		t.Errorf("<ContainsOtherRune> on 3 empty test return: '%v', and: '%d'\n", res, n)
-	}
-
-	for i, ts := range dContainsOtherRune {
+	assert.False(t, res || (n > 0), fmt.Sprintf("<ContainsOtherRune> on 3 empty test return: '%v', and: '%d'\n", res, n))
+	for _, ts := range dContainsOtherRune {
 		res, n := ContainsOtherRune(ts.s, ts.r)
-		if res != ts.res {
-			t.Errorf("<ContainsOtherRune> on state 1 test %d return: '%v', expect: '%v'\n", i, res, ts.res)
-		}
-		if n != ts.n {
-			t.Errorf("<ContainsOtherRune> on state 1 test %d return count: '%d', expect: '%d'\n", i, n, ts.n)
-		}
+		assert.Equal(t, ts.res, res)
+		assert.Equal(t, ts.n, n)
 	}
 	res, n = ContainsOtherRune(".�  10 : ���", ' ', '.')
-	if !res {
-		t.Errorf("<ContainsOtherRune> on state 2 test 1 return: '%v', expect: '%v'\n", res, true)
-	}
-	if n != 1 {
-		t.Errorf("<ContainsOtherRune> on state 2 test 1 return count: '%d', expect: '%d'\n", n, 1)
-	}
+	assert.True(t, res)
+	assert.Equal(t, 1, n)
 	res, n = ContainsOtherRune(".  10.0 : ���", ' ', '.')
-	if !res {
-		t.Errorf("<ContainsOtherRune> on state 2 test 2 return: '%v', expect: '%v'\n", res, true)
-	}
-	if n != 3 {
-		t.Errorf("<ContainsOtherRune> on state 2 test 2 return count: '%d', expect: '%d'\n", n, 3)
-	}
+	assert.True(t, res)
+	assert.Equal(t, 3, n)
 }
 
 type tStrCopyStop struct {
