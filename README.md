@@ -7,6 +7,9 @@
 
 ## functions ##
 
+    func StrHash(s string) uint32
+      return 32bit hash from string, using fnv.New32a
+
     func StrContainBackSlash(s string) bool
       return true if string s contain rune back slash '\'
 
