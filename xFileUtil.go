@@ -41,9 +41,15 @@ func ReadFileStop(fileName, strStop string) (string, error) {
 	return sb.String(), iScanner.Err()
 }
 
+// TextScanner -
+type TextScanner struct {
+	scanner *bufio.Scanner
+	file    *os.File
+}
+
 //SeekFileStop - search string in text file and return *bufio.Scanner at founded line
 //return number of line if string 'strToSearch' founded
-//return scanner on line with string 'strToSearch'. first call scanner.Text() - return this line
+//return scanner on line with string 'strToSearch'. call scanner.Text() - return this line
 //return (-1, nil, nil) if string 'strToSearch' not founded
 //return (-1, nil, nil) if string 'strToSearch' is empty
 //return (0, nil, err) if file not open or error occure when file reading

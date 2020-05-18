@@ -90,8 +90,8 @@ func ReplaceSeparators(s string) string {
 		{". ", "."},
 		{" :", ":"},
 		{": ", ":"},
-		{":.", ":"},
-		{".:", "."},
+		//{":.", ":"},
+		//{".:", "."},
 	}
 	for _, sep := range SeparatorsList {
 		s = strings.ReplaceAll(s, sep.old, sep.new)

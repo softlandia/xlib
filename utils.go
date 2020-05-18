@@ -1,6 +1,9 @@
 package xlib
 
-import "sort"
+import (
+	"hash/fnv"
+	"sort"
+)
 
 //Epsilon - precission
 const Epsilon float64 = 0.01
@@ -17,4 +20,11 @@ func Max(x, y int) int {
 func SortBytes(b []byte) []byte {
 	sort.Slice(b, func(i, j int) bool { return b[i] < b[j] })
 	return b
+}
+
+// StrHash - make hash from string
+func StrHash(s string) uint32 {
+	h := fnv.New32a()
+	h.Write([]byte(s))
+	return h.Sum32()
 }
