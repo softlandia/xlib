@@ -76,8 +76,11 @@ func SeekFileStop(fileName, strToSearch string) (int, *bufio.Scanner, error) {
 
 //FileExists - return true if file exist
 func FileExists(name string) bool {
-	_, err := os.Stat(name)
-	return !os.IsNotExist(err)
+	inf, err := os.Stat(name)
+	if os.IsNotExist(err) {
+		return false
+	}
+	return !inf.IsDir()
 }
 
 //FindFilesExt - search all files in path with 'ext' & put to list

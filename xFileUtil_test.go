@@ -52,6 +52,9 @@ func TestSeekFileStop(t *testing.T) {
 
 //FileExists
 func TestFileExists(t *testing.T) {
+	if FileExists("test_files") {
+		t.Errorf("<FileExist> return true on folder")
+	}
 	if FileExists("-.-") {
 		t.Errorf("<FileExists> return true on non exist file '-.-'")
 	}
