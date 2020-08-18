@@ -12,6 +12,21 @@ func NowB() time.Time {
 	return time.Date(y, m, d, 0, 0, 0, 0, time.UTC)
 }
 
+// WeekDayR - Сокращённое название дня недели на русском языке
+func WeekDayR(t time.Time) string {
+	days := []string{
+		"Вс",
+		"Пн",
+		"Вт",
+		"Ср",
+		"Чт",
+		"Пт",
+		"Сб",
+	}
+	wd := t.Weekday()
+	return days[wd]
+}
+
 // FirstDay - первый день текущего года
 func FirstDay() time.Time {
 	currentYear, _, _ := time.Now().Date()
