@@ -35,11 +35,11 @@ func TestSortBytes(t *testing.T) {
 
 func TestWeekDayR(t *testing.T) {
 	tmp, _ := time.Parse("2006-01-02", "2020-01-01")
-	assert.Equal(t, "Ср", WeekDayR(tmp))
+	assert.Equal(t, "Ср", WeekdayR(tmp))
 	tmp, _ = time.Parse("2006-01-02", "2020-12-31")
-	assert.Equal(t, "Чт", WeekDayR(tmp))
+	assert.Equal(t, "Чт", WeekdayR(tmp))
 	tmp, _ = time.Parse("2006-01-02", "2020-08-30")
-	assert.Equal(t, "Вс", WeekDayR(tmp))
+	assert.Equal(t, "Вс", WeekdayR(tmp))
 }
 
 func TestDay(t *testing.T) {
