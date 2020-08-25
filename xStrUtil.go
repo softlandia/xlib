@@ -2,9 +2,19 @@ package xlib
 
 import (
 	"path/filepath"
+	"strconv"
 	"strings"
 	"unicode"
 )
+
+// AtoI - convert string to int, if error occure, return def value
+func AtoI(s string, def int) int {
+	n, err := strconv.ParseInt(s, 10, 64)
+	if err != nil {
+		return def
+	}
+	return int(n)
+}
 
 //StrContainBackSlash - return true if input string contain '\'
 func StrContainBackSlash(s string) bool {

@@ -7,6 +7,9 @@
 
 ## functions ##
 
+    func AtoI(s stringm def int) int
+      return int from string, on error return def
+
     func StrHash(s string) uint32
       return 32bit hash from string, using fnv.New32a
 

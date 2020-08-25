@@ -1,5 +1,9 @@
 ﻿# VERTION DESCRIPTION #
 
+## ver 0.1.3 // 2020.08.25 ##
+
+* add AtoI
+
 ## ver 0.1.2 // 2020.08.12 ##
 
 * add time functions

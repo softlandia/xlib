@@ -7,6 +7,28 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+//AtoI
+type testAtoI struct {
+	s string
+	d int
+	r int
+}
+
+var dataAtoI = []testAtoI{
+	{"1", 0, 1},
+	{"1", 1, 1},
+	{"-1", 0, -1},
+	{"-1", 1, -1},
+	{"-", 0, 0},
+	{"-", -1, -1},
+}
+
+func TestAtoI(t *testing.T) {
+	for _, tmp := range dataAtoI {
+		assert.Equal(t, tmp.r, AtoI(tmp.s, tmp.d))
+	}
+}
+
 //StrContainBackSlash
 type testpairStrContainBackSlash struct {
 	s string
