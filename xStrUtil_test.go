@@ -58,7 +58,7 @@ type testpairStrIsPrintRune struct {
 
 var testsStrIsPrintRune = []testpairStrIsPrintRune{
 	{"consist printable rune \\", true},
-	{"consist non" + string(0x00) + "printable rune", false},
+	{"consist non" + "\x00" + "printable rune", false},
 }
 
 func TestStrIsPrintRune(t *testing.T) {

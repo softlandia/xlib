@@ -1,5 +1,10 @@
 ﻿# VERTION DESCRIPTION #
 
+## ver 0.1.4 // 2021.01.23 ##
+
+* update test with dayt & time
+* add Secret
+
 ## ver 0.1.3 // 2020.08.25 ##
 
 * add AtoI

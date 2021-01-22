@@ -56,9 +56,7 @@ func Day(i int) time.Time {
 
 // DayCount - количество дней в текущем году
 func DayCount() int {
-	currentYear, _, _ := time.Now().Date()
-	lastDay, _ := time.Parse("2006-01-02", fmt.Sprintf("%d-01-01", currentYear+1))
-	return int(lastDay.Sub(FirstDay()).Hours() / 24)
+	return Index(LastDay()) + 1
 }
 
 // Yesterday - ровно на начало вчера

@@ -7,6 +7,14 @@ import (
 	"unicode"
 )
 
+// Secret - возвращает строку с вырезанной серединой, удобно для отображения токенов и паролей
+func Secret(s string) string {
+	if len(s) < 4 {
+		return s
+	}
+	return s[:2] + "..." + s[len(s)-2:]
+}
+
 // AtoI - convert string to int, if error occure, return def value
 func AtoI(s string, def int) int {
 	n, err := strconv.ParseInt(s, 10, 64)

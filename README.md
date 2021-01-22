@@ -7,29 +7,32 @@
 
 ## functions ##
 
-    func AtoI(s stringm def int) int
-      return int from string, on error return def
+    func Secret(s string) string
+      returns a string with the middle removed, "passport" -> "pa...rt"
+
+    func AtoI(s string, def int) int
+      returns int from string, on error return def
 
     func StrHash(s string) uint32
-      return 32bit hash from string, using fnv.New32a
+      returns 32bit hash from string, using fnv.New32a
 
     func StrContainBackSlash(s string) bool
-      return true if string s contain rune back slash '\'
+      returns true if string s contain rune back slash '\'
 
     func StrIsPrintRune(s string) bool  
-      return true if input string contain only of printable rune
+      returns true if input string contain only of printable rune
 
     func ChangeFileExt(iFileName, newExt string) string  
-      return file name with new extention
+      returns file name with new extention
 
     func FileExists(name string) bool  
-      return true if file exist
+      returns true if file exist
 
     func Max(x, y int) int
-      return max from int
+      returns max from int
 
     func SortBytes(b []byte) []byte
-      return sorted slice of byte
+      returns sorted slice of byte
 
     func SeekFileStop(fileName, strToSearch string) (int, *bufio.Scanner, error)
       search string in text file and return *bufio.Scanner at founded line
