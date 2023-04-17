@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"strings"
 	"unicode"
+	"time"
 )
 
 // Secret - возвращает строку с вырезанной серединой, удобно для отображения токенов и паролей
@@ -116,3 +117,22 @@ func ReplaceSeparators(s string) string {
 	}
 	return s
 }
+
+// ParseBool - при ошибке возвращает значение по умолчанию
+func ParseBool(b string, def bool) bool {
+	res, err := strconv.ParseBool(b)
+	if err != nil {
+		res = def
+	}
+	return res
+}
+
+// ParseDate - если не выйдет, вернёт заданную по умолчанию дату
+func ParseDate(dt string, def time.Time) time.Time {
+	dtProcessed, err := time.Parse("2006-01-02", dt)
+	if err != nil {
+		return def
+	}
+	return dtProcessed
+}
+

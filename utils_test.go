@@ -43,30 +43,30 @@ func TestWeekDayR(t *testing.T) {
 }
 
 func TestDay(t *testing.T) {
-	tmp, _ := time.Parse("2006-01-02", "2021-01-01")
+	tmp, _ := time.Parse("2006-01-02", "2023-01-01")
 	assert.Equal(t, tmp, Day(0), fmt.Sprintf("expect: %s, actual: %s", tmp.Format("2006-01-02"), Day(0).Format("2006-01-02")))
-	tmp, _ = time.Parse("2006-01-02", "2021-12-31")
+	tmp, _ = time.Parse("2006-01-02", "2023-12-31")
 	assert.Equal(t, tmp, Day(364), Day(365).Format("2006-01-02"))
 }
 
 func TestFirstDay(t *testing.T) {
-	fd, _ := time.Parse("2006-01-02", "2021-01-01")
+	fd := time.Date(time.Now().Year(), 1, 1, 0, 0, 0, 0, time.UTC)
 	assert.Equal(t, fd, FirstDay())
 }
 
 func TestLastDay(t *testing.T) {
-	fd, _ := time.Parse("2006-01-02", "2021-12-31")
+	fd, _ := time.Parse("2006-01-02", "2023-12-31")
 	assert.Equal(t, fd, LastDay())
 }
 
 func TestIndex(t *testing.T) {
-	fd, _ := time.Parse("2006-01-02", "2021-01-01")
+	fd := time.Date(time.Now().Year(), 1, 1, 0, 0, 0, 0, time.UTC)
 	assert.Equal(t, 0, Index(fd))
 
-	fd, _ = time.Parse("2006-01-02", "2021-01-02")
+	fd = time.Date(time.Now().Year(), 1, 2, 0, 0, 0, 0, time.UTC) //time.Parse("2006-01-02", "2021-01-02")
 	assert.Equal(t, 1, Index(fd))
 
-	fd, _ = time.Parse("2006-01-02", "2021-12-31")
+	fd = time.Date(time.Now().Year(), 12, 31, 0, 0, 0, 0, time.UTC) //time.Parse("2006-01-02", "2021-12-31")
 	assert.Equal(t, 364, Index(fd))
 }
 

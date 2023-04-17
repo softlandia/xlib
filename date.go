@@ -8,8 +8,17 @@ import (
 
 // NowB - returns the beginning of today
 func NowB() time.Time {
-	y, m, d := time.Now().Date()
-	return time.Date(y, m, d, 0, 0, 0, 0, time.UTC)
+	return NowBegin()
+}
+
+// NowBegin - начало сегодняшнего дня
+func NowBegin() time.Time {
+	return time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 0, 0, 0, 0, time.UTC)
+}
+
+// DateBegin - начало переданного дня
+func DateBegin(date time.Time) time.Time {
+	return time.Date(date.Year(), date.Month(), date.Day(), 0, 0, 0, 0, time.UTC)
 }
 
 // WeekdayR - Сокращённое название дня недели на русском языке

@@ -1,4 +1,4 @@
-//(c) softland 2019-2020
+//(c) softland 2019-2023
 //softlandia@gmail.com
 package xlib
 
@@ -18,13 +18,13 @@ func TestReadFileStop(t *testing.T) {
 	assert.Nil(t, err)
 	_, err = ReadFileStop("", "*")
 	assert.NotNil(t, err)
-	s, err = ReadFileStop("test_files\\empty_file.txt", "*")
+	s, err = ReadFileStop("test_files/empty_file.txt", "*")
 	assert.Nil(t, err)
 	assert.Equal(t, 0, len(s))
-	s, err = ReadFileStop("test_files\\rune_encode_error.txt", "4")
+	s, err = ReadFileStop("test_files/rune_encode_error.txt", "4")
 	assert.Nil(t, err)
 	assert.Equal(t, "123", s)
-	s, err = ReadFileStop("test_files\\2line.txt", " ")
+	s, err = ReadFileStop("test_files/2line.txt", " ")
 	assert.Nil(t, err)
 	assert.Equal(t, "1234", s)
 }
@@ -34,18 +34,18 @@ func TestSeekFileStop(t *testing.T) {
 	_, _, err := SeekFileStop("-.-", "-")
 	assert.NotNil(t, err)
 
-	index, scanner, err := SeekFileStop("test_files\\866&1251.txt", "~A")
+	index, scanner, _ := SeekFileStop("test_files/866&1251.txt", "~A")
 	assert.NotNil(t, scanner)
 	scanner.Scan()
 	assert.Equal(t, "<OK>", scanner.Text())
 
-	index, scanner, err = SeekFileStop("test_files\\866&1251.txt", "")
+	index, _, _ = SeekFileStop("test_files/866&1251.txt", "")
 	assert.Less(t, index, 0, fmt.Sprintf("1: %d", index))
 
-	index, scanner, err = SeekFileStop("test_files\\empty_file.txt", "~")
+	index, _, _ = SeekFileStop("test_files/empty_file.txt", "~")
 	assert.Less(t, index, 0, fmt.Sprintf("2: %d", index))
 
-	index, scanner, err = SeekFileStop("test_files\\rune_error_1251.txt", "#")
+	index, _, err = SeekFileStop("test_files/rune_error_1251.txt", "#")
 	assert.Nil(t, err)
 	assert.Equal(t, 1, index)
 }
@@ -58,7 +58,7 @@ func TestFileExists(t *testing.T) {
 	if FileExists("-.-") {
 		t.Errorf("<FileExists> return true on non exist file '-.-'")
 	}
-	if !FileExists("test_files\\866&1251.txt") || !FileExists("test_files\\2line.txt") || !FileExists("test_files\\empty_file.txt") {
+	if !FileExists("test_files/866&1251.txt") || !FileExists("test_files/2line.txt") || !FileExists("test_files/empty_file.txt") {
 		t.Error("<FileExists> return false on exist files: 866&1251.txt, 866to1251.txt, empty_file.txt")
 	}
 }
@@ -69,6 +69,6 @@ func TestFindFilesExt(t *testing.T) {
 	assert.NotNil(t, err)
 
 	fl := make([]string, 0, 10)
-	n, err := FindFilesExt(&fl, ".", ".txt")
+	n, _ := FindFilesExt(&fl, ".", ".txt")
 	assert.Equal(t, n, 5)
 }
